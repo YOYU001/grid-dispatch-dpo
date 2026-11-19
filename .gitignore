@@ -1,0 +1,16 @@
+# secrets
+.env
+*.token
+kaggle.json
+
+# outputs / weights
+outputs/
+checkpoints/
+*.safetensors
+*.bin
+wandb/
+trackio/
+
+# python
+__pycache__/
+.ipynb_checkpoints/
