@@ -52,10 +52,11 @@ The gap between the test set and unseen/human phrasings is what DPO targets.
 
 1. Kaggle → Create → Import Notebook → GitHub tab → `YOYU001/grid-dispatch-dpo`
 2. Add-ons → Secrets → `HF_TOKEN` (read access for 00, write access for 02)
-3. Run all
+3. GPU notebooks (01a, 02, 03): Accelerator = GPU T4 x2, Internet on, then **Save Version → Save & Run All (Commit)**. Outputs persist under Version → Output; interactive sessions lose `/kaggle/working` when they reset.
 
 ## Log
 
 | Date | Run | Notes |
 |---|---|---|
 | 2026-11-19 | 00 | Inspected SFT assets; fixed keyword search to skip the system prompt |
+| 2026-11-20 | 01a | vLLM-only (fp16, enforce_eager, in-process engine, fail fast); stratified 530 train prompts, greedy + 4 samples @ T=0.8; run via Save & Run All (Commit) |
