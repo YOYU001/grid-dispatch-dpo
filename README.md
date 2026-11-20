@@ -59,4 +59,4 @@ The gap between the test set and unseen/human phrasings is what DPO targets.
 | Date | Run | Notes |
 |---|---|---|
 | 2026-11-19 | 00 | Inspected SFT assets; fixed keyword search to skip the system prompt |
-| 2026-11-20 | 01a | vLLM-only (fp16, enforce_eager, in-process engine, fail fast); stratified 530 train prompts, greedy + 4 samples @ T=0.8; run via Save & Run All (Commit) |
+| 2026-11-20 | 01a | vLLM 0.34.0 pinned + nvidia-cutlass-dsl (0.34.0 kernel warmup imports `cutlass`); vLLM-only (fp16, enforce_eager, in-process engine, fail fast); stratified 530 train prompts, greedy + 4 samples @ T=0.8; run via Save & Run All (Commit) |
