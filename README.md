@@ -59,6 +59,7 @@ The gap between the test set and unseen/human phrasings is what DPO targets.
 | Date | Run | Notes |
 |---|---|---|
 | 2026-11-19 | 00 | Inspected SFT assets; fixed keyword search to skip the system prompt |
+| 2026-11-23 | 02 run 1 | Stopped at the pre-training check: TRL created the `ref` adapter but it was not bit-identical to the SFT adapter (on T4 the loaded SFT adapter is fp32, the new ref adapter likely fp16). Fix: print dtype/diff diagnostics, copy the SFT weights into `ref` explicitly, then check margin ≈ 0. Also added Trackio (private Space, local fallback), new `activation_checkpointing` names, and the SFT optimizer settings (`paged_adamw_8bit`, `max_grad_norm=0.5`). Max pair length 654 tokens |
 | 2026-11-23 | 02 | Notebook ready. Pinned trl 1.18.2 / peft 0.22.0 / transformers 5.24.0 after a CPU run with a tiny Qwen3 confirmed the ref-adapter copy, zero pre-training margin, and adapter-only save |
 | 2026-11-23 | 01b result | 1,692 train / 201 eval pairs, pushed to `yoyu001/grid-dispatch-dpo-pairs`; refuse_partial kept 300/300 model answers (none dropped). Refuse is 21% of pairs vs 12% of SFT data, so watch for over-refusal in 03 |
 | 2026-11-23 | 01b | Notebook ready; tested end-to-end on data from the original generator with a mocked model |
