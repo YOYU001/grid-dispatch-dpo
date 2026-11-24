@@ -18,6 +18,20 @@ SFT results (exact match, base → SFT): test 19.6% → 98.6%, unseen phrasings 
 
 The gap between the test set and unseen/human phrasings is what DPO targets.
 
+## Results: DPO v1 (notebook 03, one fp16 base + per-request LoRA in vLLM, greedy)
+
+| Set | Base | SFT | SFT+DPO v1 | SFT→DPO fixed / broken | Exact McNemar p |
+|---|---|---|---|---|---|
+| test (500) | 19.6% | **98.4%** | 96.4% | 3 / 13 | 0.021 (worse) |
+| test_unseen_phrasing (394) | 19.8% | 80.5% | **84.0%** | 28 / 14 | 0.044 (better, borderline) |
+| human-written (20) | 30% | **75%** (15/20) | 70% (14/20) | 1 / 2 | 1.0 (too few items) |
+
+- Eval reproduces the SFT model card (base 19.6 / 19.8 / 30; SFT 98.4 / 80.5 / 75 vs 98.6 / 81.2 / 75).
+- Leak check: 0 exact duplicates, 0 held-out phrasings in training data; human set max masked 4-gram Jaccard 0.211, 0 name-masked duplicates. 41% of test and 16% of unseen equal a train note once workload names are masked.
+- DPO gains: unseen grid 43.8 → 67.2, missed refusals on unseen 4 → 2, no increase in false refusals.
+- DPO regressions: extra constraints (e.g. adding `earliest_start` or `allow_pause` that the note did not ask for) and some time shifts toward midnight. Likely cause: 150 `missing_constraint` pairs and no opposite pairs, plus the chosen log-prob drop seen in 02.
+- Unseen re-run changed by 1 item per model (80.7 → 80.5, 83.8 → 84.0): vLLM fp16 batching is not bit-exact even at temperature 0, which is enough to move p across 0.05.
+
 ## SFT facts (from notebook 00)
 
 **Dataset splits**: train 3,954 · validation 500 · test 500 · test_unseen_phrasing 394. The 20 human-written questions are kept outside the dataset.
@@ -59,6 +73,7 @@ The gap between the test set and unseen/human phrasings is what DPO targets.
 | Date | Run | Notes |
 |---|---|---|
 | 2026-11-19 | 00 | Inspected SFT assets; fixed keyword search to skip the system prompt |
+| 2026-11-24 | 03 run 2 | Full run incl. the human set. Results table above |
 | 2026-11-24 | 03 run 1 | Eval matches the model card (base 19.6/19.8 exact; SFT 98.4/80.7 vs 98.6/81.2). DPO v1: test 98.4 → 96.4 (3 fixed / 13 broken, exact McNemar p = 0.021), unseen 80.7 → 83.8 (25 fixed / 13 broken, p = 0.073), unseen new phrasing 76.9 → 80.9, unseen grid 43.8 → 67.2, missed refusals on unseen 4 → 2, no rise in false refusals. Regressions show a bias toward extra constraints (extra_constraint 1 → 6 on test; missing_constraint 52 → 33 on unseen), likely from 150 missing_constraint pairs with no opposite (extra constraint) pairs. Human set was skipped: Kaggle renamed the file to `grid-dispatch-human-test.jsonl`; 03 now matches any `*human*.jsonl`, stops if it is missing, and has `RUN_SETS` for a human-only rerun |
 | 2026-11-24 | 02 result | 106 steps, 102 min on T4. Eval margin 0 → 5.75, accuracy 1.0 from step 25, plateau after ~75. Chosen log-prob −0.035 → −0.21 (≈97% → 81%) despite the SFT loss term. Adapter pushed to `yoyu001/grid-dispatch-A-instruct-qlora-dpo-v1` |
 | 2026-11-24 | 02 run 3 | Same step-1 failure. The log showed the adapter was fp32 after loading and bf16 after `DPOTrainer(...)`: TRL casts trainable LoRA params of quantized models to bf16 (QLoRA paper default), which T4's fp16 GradScaler cannot unscale. Fix: after building the trainer, cast trainable params back to fp32 and copy the exact fp32 SFT weights from the frozen `ref` copy (made before TRL's cast) into `default`; verified locally that `default` then equals the SFT adapter file exactly |
