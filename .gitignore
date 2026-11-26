@@ -16,7 +16,7 @@ __pycache__/
 .ipynb_checkpoints/
 
 # private eval data (20 human-written questions) - never commit
-human_test*.jsonl
+*human*.jsonl
 eval/
 03_results.jsonl
 03_summary.json
