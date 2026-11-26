@@ -32,6 +32,20 @@ The gap between the test set and unseen/human phrasings is what DPO targets.
 - DPO regressions: extra constraints (e.g. adding `earliest_start` or `allow_pause` that the note did not ask for) and some time shifts toward midnight. Likely cause: 150 `missing_constraint` pairs and no opposite pairs, plus the chosen log-prob drop seen in 02.
 - Unseen re-run changed by 1 item per model (80.7 → 80.5, 83.8 → 84.0): vLLM fp16 batching is not bit-exact even at temperature 0, which is enough to move p across 0.05.
 
+### Charts
+
+![Exact match: base vs SFT vs SFT+DPO](reports/figures/accuracy_base_sft_dpo.png)
+
+![Items fixed vs broken by DPO](reports/figures/dpo_fixed_vs_broken.png)
+
+![DPO training: reward margin and chosen log-prob](reports/figures/dpo_training.png)
+
+<details><summary>SFT training loss (upstream adapter)</summary>
+
+![SFT loss](reports/figures/sft_loss.png)
+
+</details>
+
 ## SFT facts (from notebook 00)
 
 **Dataset splits**: train 3,954 · validation 500 · test 500 · test_unseen_phrasing 394. The 20 human-written questions are kept outside the dataset.
