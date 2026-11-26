@@ -62,6 +62,8 @@ The gap between the test set and unseen/human phrasings is what DPO targets.
 | 02 | `02_dpo_train.ipynb` | Continue training the SFT LoRA adapter on 4-bit Qwen3-4B with TRL DPO (sigmoid + SFT loss, beta 0.1, lr 1e-5, 1 epoch). TRL copies the SFT adapter as a frozen `ref` adapter; the notebook checks the copy and that eval reward margin is 0 before training. Saves only the trained adapter and pushes `yoyu001/grid-dispatch-A-instruct-qlora-dpo-v1` (private) with logs and curves | T4 |
 | 03 | `03_eval_before_after.ipynb` | One fp16 Qwen3-4B in vLLM with multi-LoRA: base vs SFT vs SFT+DPO on test, test_unseen_phrasing and the 20 human-written questions (private Kaggle dataset, never committed). Leak check first (exact, name-masked, 8-char, 4-gram Jaccard, held-out phrasings), then accuracy split into familiar (only the workload name differs from a train note) vs new phrasing, refusal errors, per-category scores and SFT→DPO flips. Runs without the DPO adapter to validate against the SFT model card | T4 |
 
+**Report (zh-TW)**: DPO v1 experiment report — [Markdown](reports/dpo_v1_report.md) · [PDF with charts](reports/dpo_v1_report.pdf)
+
 ## Run on Kaggle
 
 1. Kaggle → Create → Import Notebook → GitHub tab → `YOYU001/grid-dispatch-dpo`
